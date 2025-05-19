@@ -1,0 +1,112 @@
+
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import CreatorDashboard from "./pages/CreatorDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserLogin from "./pages/UserLogin";
+import UserSignup from "./pages/UserSignup";
+import AuthCallback from "./pages/AuthCallback";
+import CVCreator from "./pages/CVCreator";
+import CareerTest from "./pages/CareerTest";
+import FindWork from "./pages/FindWork";
+import FindTalent from "./pages/FindTalent";
+import PostProject from "./pages/PostProject";
+import UserProfile from "./pages/UserProfile";
+import { useEffect } from "react";
+import { supabase } from "./integrations/supabase/client";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    }
+  }
+});
+
+const App = () => {
+  // Ensure session persistence is properly configured
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data && data.session) {
+        console.log("Session exists on app load");
+      }
+    };
+    
+    checkSession();
+  }, []);
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard/*" element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/login" element={<UserLogin />} />
+              <Route path="/signup" element={<UserSignup />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              } />
+              <Route path="/creator/dashboard/*" element={
+                <ProtectedRoute>
+                  <CreatorDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/cv-creator" element={
+                <ProtectedRoute>
+                  <CVCreator />
+                </ProtectedRoute>
+              } />
+              <Route path="/career-test" element={
+                <ProtectedRoute>
+                  <CareerTest />
+                </ProtectedRoute>
+              } />
+              <Route path="/find-work" element={
+                <ProtectedRoute>
+                  <FindWork />
+                </ProtectedRoute>
+              } />
+              <Route path="/find-talent" element={
+                <ProtectedRoute>
+                  <FindTalent />
+                </ProtectedRoute>
+              } />
+              <Route path="/post-project" element={
+                <ProtectedRoute>
+                  <PostProject />
+                </ProtectedRoute>
+              } />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;
