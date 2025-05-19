@@ -2,6 +2,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from './components/ui/toaster'
 import { ThemeProvider } from './context/ThemeProvider'
 import { LanguageProvider } from './context/LanguageContext'
@@ -18,5 +19,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </LanguageProvider>
       </ThemeProvider>
     </BrowserRouter>
+           <Analytics />
   </React.StrictMode>,
 )
